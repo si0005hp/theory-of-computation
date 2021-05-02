@@ -58,7 +58,7 @@ class FADesign:
         try:
             iter(state)
             # state is iterable
-            return str([state_to_str(e) for e in state])
+            return str([self.state_to_str(e) for e in state])
         except TypeError:
             # state is not iterable
             return str(state)
