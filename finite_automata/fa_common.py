@@ -43,7 +43,7 @@ class FADesign:
         g.render(filename=name, directory="/tmp", format="png", view=True)
 
     def add_graph_node(self, graph, state, state_str, start_state, accept_states):
-        attr = {'root': 'true'}
+        attr = {'root': 'true', 'shape': 'circle'}
         if state in accept_states:
             attr['shape'] = 'doublecircle'
         if state == start_state:
