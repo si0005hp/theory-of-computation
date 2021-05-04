@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import graphviz
+import graphviz, random, string
 
 
 class FARule:
@@ -26,10 +26,16 @@ class FADesign:
         self._accept_states = accept_states
         self._rulebook = rulebook
 
-    def draw(self, name):
-        self.draw_graph(name, self._rulebook._rules, self._start_state, self._accept_states)
+    def draw(self, directory=None, filename=None):
+        if directory == None:
+            directory = "/tmp"
+        if filename == None:
+            filename = self.random_str(8)
 
-    def draw_graph(self, name, rules, start_state, accept_states):
+        self.draw_graph(directory, filename, self._rulebook._rules, self._start_state,
+                        self._accept_states)
+
+    def draw_graph(self, directory, filename, rules, start_state, accept_states):
         g = graphviz.Digraph(format="svg", graph_attr={'rankdir': 'LR'})
         self.add_start_edge(g, start_state)
 
@@ -49,10 +55,10 @@ class FADesign:
                 edge_labels.append(label)
         self.add_edges(g, edges)
 
-        g.render(filename=name, directory="/tmp", format="png", view=True)
+        g.render(filename=filename, directory=directory, format="png", view=True)
 
     def add_start_edge(self, graph, start_state):
-        dummy_node = '1568a0a65'  # magic code
+        dummy_node = self.random_str(8)
         graph.node(dummy_node, style="invisible")
         graph.edge(dummy_node, self.state_to_str(start_state), style="bold")
 
@@ -77,3 +83,6 @@ class FADesign:
         except TypeError:
             # state is not iterable
             return str(state)
+
+    def random_str(self, len):
+        return ''.join(random.choices(string.ascii_letters + string.digits, k=len))

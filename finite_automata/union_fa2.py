@@ -26,4 +26,4 @@ start_rules = [nfa.FARule(start_state, None, s) for s in [dfa1._start_state, dfa
 rules = dfa1._rulebook._rules + dfa2._rulebook._rules + start_rules
 
 union_fa2 = nfa.NFADesign(start_state, accept_states, nfa.NFARulebook(rules))
-union_fa2.draw('union_fa2')
+union_fa2.draw()

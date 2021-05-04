@@ -18,4 +18,4 @@ rewind_rules = [nfa.FARule(s, None, dfa._start_state) for s in dfa._accept_state
 rules = dfa._rulebook._rules + [start_rule] + rewind_rules
 
 star_fa = nfa.NFADesign(start_state, accept_states, nfa.NFARulebook(rules))
-star_fa.draw('star_fa')
+star_fa.draw()

@@ -40,6 +40,6 @@ rules = [
 
 union_fa = dfa.DFADesign(start_state, accept_states, dfa.DFARulebook(rules))
 
-dfa1.draw('a')
-dfa2.draw('b')
-union_fa.draw('union_fa')
+dfa1.draw()
+dfa2.draw()
+union_fa.draw()

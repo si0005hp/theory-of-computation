@@ -26,4 +26,4 @@ joint_rules = [nfa.FARule(s, None, dfa2._start_state) for s in dfa1._accept_stat
 rules = dfa1._rulebook._rules + dfa2._rulebook._rules + joint_rules
 
 concat_fa = nfa.NFADesign(start_state, accept_states, nfa.NFARulebook(rules))
-concat_fa.draw('concat_fa')
+concat_fa.draw()
