@@ -31,24 +31,27 @@ class FADesign:
 
     def draw_graph(self, name, rules, start_state, accept_states):
         g = graphviz.Digraph(format="svg", graph_attr={'rankdir': 'LR'})
+        self.add_start_edge(g, start_state)
 
         for rule in rules:
             from_state = self.state_to_str(rule._state)
             to_state = self.state_to_str(rule._next_state)
 
-            self.add_graph_node(g, rule._state, from_state, start_state, accept_states)
-            self.add_graph_node(g, rule._next_state, to_state, start_state, accept_states)
+            self.add_graph_node(g, rule._state, from_state, accept_states)
+            self.add_graph_node(g, rule._next_state, to_state, accept_states)
             g.edge(from_state, to_state, label="ε" if rule._character == None else rule._character)
 
         g.render(filename=name, directory="/tmp", format="png", view=True)
 
-    def add_graph_node(self, graph, state, state_str, start_state, accept_states):
+    def add_start_edge(self, graph, start_state):
+        dummy_node = '1568a0a65'  # magic code
+        graph.node(dummy_node, style="invisible")
+        graph.edge(dummy_node, self.state_to_str(start_state), style="bold")
+
+    def add_graph_node(self, graph, state, state_str, accept_states):
         attr = {'root': 'true', 'shape': 'circle'}
         if state in accept_states:
             attr['shape'] = 'doublecircle'
-        if state == start_state:
-            attr['color'] = 'blue'
-
         graph.node(state_str, **attr)
 
     def state_to_str(self, state):
