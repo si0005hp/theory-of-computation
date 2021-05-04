@@ -33,13 +33,21 @@ class FADesign:
         g = graphviz.Digraph(format="svg", graph_attr={'rankdir': 'LR'})
         self.add_start_edge(g, start_state)
 
+        edges = {}
         for rule in rules:
             from_state = self.state_to_str(rule._state)
             to_state = self.state_to_str(rule._next_state)
 
             self.add_graph_node(g, rule._state, from_state, accept_states)
             self.add_graph_node(g, rule._next_state, to_state, accept_states)
-            g.edge(from_state, to_state, label="ε" if rule._character == None else rule._character)
+
+            label = "ε" if rule._character == None else rule._character
+            edge_labels = edges.get((from_state, to_state))
+            if edge_labels == None:
+                edges[(from_state, to_state)] = [label]
+            else:
+                edge_labels.append(label)
+        self.add_edges(g, edges)
 
         g.render(filename=name, directory="/tmp", format="png", view=True)
 
@@ -53,6 +61,10 @@ class FADesign:
         if state in accept_states:
             attr['shape'] = 'doublecircle'
         graph.node(state_str, **attr)
+
+    def add_edges(self, graph, edges):
+        for (_from, to), labels in edges.items():
+            graph.edge(_from, to, ','.join(labels))
 
     def state_to_str(self, state):
         if isinstance(state, str):
