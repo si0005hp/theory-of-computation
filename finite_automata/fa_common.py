@@ -59,7 +59,7 @@ class FADesign:
 
     def add_start_edge(self, graph, start_state):
         dummy_node = self.random_str(8)
-        graph.node(dummy_node, style="invisible")
+        graph.node(dummy_node, style="invis", shape="point")
         graph.edge(dummy_node, self.state_to_str(start_state), style="bold")
 
     def add_graph_node(self, graph, state, state_str, accept_states):
