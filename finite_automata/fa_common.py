@@ -78,10 +78,15 @@ class FADesign:
 
         try:
             iter(state)
-            # state is iterable
-            return str([self.state_to_str(e) for e in state])
+            ### state is iterable ###
+            if len(state) == 0:
+                return 'Ø'
+
+            # converting list object directly to set object break the order of elements in string
+            list_str = str([self.state_to_str(e) for e in sorted(state)])
+            return list_str.replace('[', '{').replace(']', '}')
         except TypeError:
-            # state is not iterable
+            ### state is not iterable ###
             return str(state)
 
     def random_str(self, len):
