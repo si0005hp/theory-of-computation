@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 sys.path.append('..')
 sys.path.append('../finite_automata')
@@ -67,7 +68,7 @@ class Empty(Pattern):
         return 3
 
     def __str__(self):
-        return ''
+        return 'ε'
 
     def to_nfa_design(self):
         start_state = TmpState()
