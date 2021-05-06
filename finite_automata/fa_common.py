@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import graphviz, random, string
+import graphviz
+import util
 
 
 class FARule:
@@ -30,7 +31,7 @@ class FADesign:
         if directory == None:
             directory = "/tmp"
         if filename == None:
-            filename = self.random_str(8)
+            filename = util.random_str(8)
 
         self.draw_graph(directory, filename, self._rulebook._rules, self._start_state,
                         self._accept_states)
@@ -58,7 +59,7 @@ class FADesign:
         g.render(filename=filename, directory=directory, format="png", view=True)
 
     def add_start_edge(self, graph, start_state):
-        dummy_node = self.random_str(8)
+        dummy_node = util.random_str(8)
         graph.node(dummy_node, style="invis", shape="point")
         graph.edge(dummy_node, self.state_to_str(start_state), style="bold")
 
@@ -88,6 +89,3 @@ class FADesign:
         except TypeError:
             ### state is not iterable ###
             return str(state)
-
-    def random_str(self, len):
-        return ''.join(random.choices(string.ascii_letters + string.digits, k=len))
