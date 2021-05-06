@@ -3,7 +3,7 @@ sys.path.append('..')
 sys.path.append('../finite_automata')
 
 from functools import reduce
-from finite_automata.util import random_str
+from finite_automata.fa_util import random_str
 from finite_automata.nfa import NFARulebook, NFADesign, FARule
 
 

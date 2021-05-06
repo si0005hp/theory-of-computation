@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import graphviz
-import util
+import fa_util
 
 
 class FARule:
@@ -31,7 +31,7 @@ class FADesign:
         if directory == None:
             directory = "/tmp"
         if filename == None:
-            filename = util.random_str(8)
+            filename = fa_util.random_str(8)
 
         self.draw_graph(directory, filename, self._rulebook._rules, self._start_state,
                         self._accept_states)
@@ -59,7 +59,7 @@ class FADesign:
         g.render(filename=filename, directory=directory, format="png", view=True)
 
     def add_start_edge(self, graph, start_state):
-        dummy_node = util.random_str(8)
+        dummy_node = fa_util.random_str(8)
         graph.node(dummy_node, style="invis", shape="point")
         graph.edge(dummy_node, self.state_to_str(start_state), style="bold")
 
