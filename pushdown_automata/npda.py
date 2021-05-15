@@ -1,4 +1,4 @@
-from pda_common import PDARule, PDAConfiguration, Stack
+from pda_common import PDARule, PDAConfiguration, PDADesign, Stack
 
 
 class NPDARulebook:
@@ -46,13 +46,7 @@ class NPDA:
         return self._rulebook.follow_free_moves(self._current_configurations)
 
 
-class NPDADesign:
-
-    def __init__(self, start_state, bottom_character, accept_states, rulebook):
-        self._start_state = start_state
-        self._bottom_character = bottom_character
-        self._accept_states = accept_states
-        self._rulebook = rulebook
+class NPDADesign(PDADesign):
 
     def accepts(self, string):
         npda = self.to_npda()

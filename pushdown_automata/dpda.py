@@ -1,4 +1,4 @@
-from pda_common import PDARule, PDAConfiguration, Stack
+from pda_common import PDARule, PDAConfiguration, PDADesign, Stack
 
 
 class DPDARulebook:
@@ -54,13 +54,7 @@ class DPDA:
         return self.current_configuration().is_stuck()
 
 
-class DPDADesign:
-
-    def __init__(self, start_state, bottom_character, accept_states, rulebook):
-        self._start_state = start_state
-        self._bottom_character = bottom_character
-        self._accept_states = accept_states
-        self._rulebook = rulebook
+class DPDADesign(PDADesign):
 
     def accepts(self, string):
         dpda = self.to_dpda()

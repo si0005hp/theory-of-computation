@@ -1,4 +1,12 @@
+# -*- coding: utf-8 -*-
+import sys
+sys.path.append('..')
+sys.path.append('../finite_automata')
+
+import graphviz
 from functools import reduce
+import finite_automata.fa_util as fa_util
+from finite_automata.graph import Graph
 
 
 class Stack:
@@ -68,3 +76,35 @@ class PDARule:
     def next_stack(self, configuration):
         popped_stack = configuration.stack.pop()
         return reduce(lambda stack, c: stack.push(c), reversed(self._push_characters), popped_stack)
+
+
+class PDAGraph(Graph):
+
+    # Override
+    def make_label(self, rule):
+        char = "ε" if rule._character == None else rule._character
+        pop_char = rule._pop_character
+        push_chars = ''.join(rule._push_characters)
+        return '{};{}/{}'.format(char, pop_char, push_chars)
+
+    # Override
+    def format_labels(self, labels):
+        return ',\n'.join(labels)
+
+
+class PDADesign:
+
+    def __init__(self, start_state, bottom_character, accept_states, rulebook):
+        self._start_state = start_state
+        self._bottom_character = bottom_character
+        self._accept_states = accept_states
+        self._rulebook = rulebook
+
+    def draw(self, directory=None, filename=None):
+        if directory == None:
+            directory = "/tmp"
+        if filename == None:
+            filename = fa_util.random_str(8)
+
+        PDAGraph().draw(directory, filename, self._rulebook._rules, self._start_state,
+                        self._accept_states)
