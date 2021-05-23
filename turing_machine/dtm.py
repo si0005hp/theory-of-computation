@@ -57,7 +57,7 @@ class TMRule:
         self.state = state
         self.character = character
         self.next_state = next_state
-        self.write_character = write_character
+        self.write_character = character if write_character == None else write_character
         self.direction = direction
 
     def applies_to(self, configuration):
@@ -112,27 +112,10 @@ class DTMGraph(Graph):
 
 class DTM:
 
-    class GraphDrawer:
-
-        def __init__(self, rulebook, start_state, accept_states):
-            self.rulebook = rulebook
-            self.start_state = start_state
-            self.accept_states = accept_states
-
-        def draw(self, directory=None, filename=None):
-            if directory == None:
-                directory = "/tmp"
-            if filename == None:
-                filename = fa_util.random_str(8)
-
-            DTMGraph().draw(directory, filename, self.rulebook.rules, self.start_state,
-                            self.accept_states)
-
     def __init__(self, current_configuration, accept_states, rulebook):
         self.current_configuration = current_configuration
         self.accept_states = accept_states
         self.rulebook = rulebook
-        self.graph = self.GraphDrawer(rulebook, current_configuration.state, accept_states)
 
     def accepting(self):
         return self.current_configuration.state in self.accept_states
@@ -147,5 +130,27 @@ class DTM:
     def is_stuck(self):
         return not self.accepting() and not self.rulebook.applies_to(self.current_configuration)
 
+
+class DTMDesign:
+
+    def __init__(self, start_state, accept_states, rulebook):
+        self.start_state = start_state
+        self.accept_states = accept_states
+        self.rulebook = rulebook
+
+    def new_dtm(self, tape):
+        return DTM(TMConfiguration(self.start_state, tape), self.accept_states, self.rulebook)
+
+    def accepts(self, tape):
+        dtm = self.new_dtm(tape)
+        dtm.run()
+        return dtm.accepting()
+
     def draw(self, directory=None, filename=None):
-        self.graph.draw(directory, filename)
+        if directory == None:
+            directory = "/tmp"
+        if filename == None:
+            filename = fa_util.random_str(8)
+
+        DTMGraph().draw(directory, filename, self.rulebook.rules, self.start_state,
+                        self.accept_states)
