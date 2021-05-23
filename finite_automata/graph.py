@@ -11,11 +11,11 @@ class Graph:
 
         edges = {}
         for rule in rules:
-            from_state = self.state_to_str(rule._state)
-            to_state = self.state_to_str(rule._next_state)
+            from_state = self.state_to_str(self.get_state(rule))
+            to_state = self.state_to_str(self.get_next_state(rule))
 
-            self.add_graph_node(g, rule._state, from_state, accept_states)
-            self.add_graph_node(g, rule._next_state, to_state, accept_states)
+            self.add_graph_node(g, self.get_state(rule), from_state, accept_states)
+            self.add_graph_node(g, self.get_next_state(rule), to_state, accept_states)
 
             label = self.make_label(rule)
             edge_labels = edges.get((from_state, to_state))
@@ -34,6 +34,14 @@ class Graph:
     # Supposed to be extended
     def format_labels(self, labels):
         return ','.join(labels)
+
+    # Supposed to be extended
+    def get_state(self, rule):
+        return rule._state
+
+    # Supposed to be extended
+    def get_next_state(self, rule):
+        return rule._next_state
 
     def add_start_edge(self, graph, start_state):
         dummy_node = fa_util.random_str(8)

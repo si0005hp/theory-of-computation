@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+import sys
+sys.path.append('..')
+sys.path.append('../finite_automata')
+
+import finite_automata.fa_util as fa_util
+from finite_automata.graph import Graph
+
+
 class Tape:
 
     def __init__(self, left, middle, right, blank):
@@ -82,12 +91,48 @@ class DTMRulebook:
         return self.rule_for(configuration).follow(configuration)
 
 
+class DTMGraph(Graph):
+
+    # Override
+    def make_label(self, rule):
+        return '{}/{};{}'.format(rule.character, rule.write_character, rule.direction)
+
+    # Override
+    def format_labels(self, labels):
+        return '\n'.join(labels)
+
+    # Override
+    def get_state(self, rule):
+        return rule.state
+
+    # Override
+    def get_next_state(self, rule):
+        return rule.next_state
+
+
 class DTM:
+
+    class GraphDrawer:
+
+        def __init__(self, rulebook, start_state, accept_states):
+            self.rulebook = rulebook
+            self.start_state = start_state
+            self.accept_states = accept_states
+
+        def draw(self, directory=None, filename=None):
+            if directory == None:
+                directory = "/tmp"
+            if filename == None:
+                filename = fa_util.random_str(8)
+
+            DTMGraph().draw(directory, filename, self.rulebook.rules, self.start_state,
+                            self.accept_states)
 
     def __init__(self, current_configuration, accept_states, rulebook):
         self.current_configuration = current_configuration
         self.accept_states = accept_states
         self.rulebook = rulebook
+        self.graph = self.GraphDrawer(rulebook, current_configuration.state, accept_states)
 
     def accepting(self):
         return self.current_configuration.state in self.accept_states
@@ -101,3 +146,6 @@ class DTM:
 
     def is_stuck(self):
         return not self.accepting() and not self.rulebook.applies_to(self.current_configuration)
+
+    def draw(self, directory=None, filename=None):
+        self.graph.draw(directory, filename)

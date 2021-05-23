@@ -18,6 +18,8 @@ class TestDTM(unittest.TestCase):
                 TMRule(2, '_', 3, '_', 'L')
             ]))
 
+        dtm.draw()
+
         self.assertFalse(dtm.accepting())
         self.assertEqual(1, dtm.current_configuration.state)
         self.assertEqual('101(1)', str(dtm.current_configuration.tape))
@@ -69,6 +71,8 @@ class TestDTM(unittest.TestCase):
                 TMRule(5, 'X', 5, 'X', 'L'),  # skip X
                 TMRule(5, '_', 1, '_', 'R'),  # found space, move to state1
             ]))
+
+        dtm.draw()
 
         for _ in range(0, 10):
             dtm.step()
