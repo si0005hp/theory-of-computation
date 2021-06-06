@@ -93,9 +93,30 @@ class DTMRulebook:
 
 class DTMGraph(Graph):
 
+    class LabelMaker:
+
+        def make_label(self, rule):
+            pass
+
+    class RigidLabelMaker(LabelMaker):
+
+        def make_label(self, rule):
+            return '{}/{};{}'.format(rule.character, rule.write_character, rule.direction)
+
+    class SimpleLabelMaker(LabelMaker):
+
+        def make_label(self, rule):
+            if rule.character == rule.write_character:
+                return '{}→{}'.format(rule.character, rule.direction)
+            else:
+                return '{}→{},{}'.format(rule.character, rule.write_character, rule.direction)
+
+    def __init__(self, use_label_simple=False):
+        self.label_maker = self.SimpleLabelMaker() if use_label_simple else self.RigidLabelMaker()
+
     # Override
     def make_label(self, rule):
-        return '{}/{};{}'.format(rule.character, rule.write_character, rule.direction)
+        return self.label_maker.make_label(rule)
 
     # Override
     def format_labels(self, labels):
@@ -158,11 +179,11 @@ class DTMDesign:
         dtm.run()
         return dtm.accepting()
 
-    def draw(self, directory=None, filename=None):
+    def draw(self, directory=None, filename=None, use_label_simple=False):
         if directory == None:
             directory = "/tmp"
         if filename == None:
             filename = fa_util.random_str(8)
 
-        DTMGraph().draw(directory, filename, self.rulebook.rules, self.start_state,
-                        self.accept_states)
+        DTMGraph(use_label_simple).draw(directory, filename, self.rulebook.rules, self.start_state,
+                                        self.accept_states)
