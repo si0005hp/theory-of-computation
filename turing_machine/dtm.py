@@ -112,23 +112,34 @@ class DTMGraph(Graph):
 
 class DTM:
 
-    def __init__(self, current_configuration, accept_states, rulebook):
+    def __init__(self, current_configuration, accept_states, rulebook, is_debug=False):
         self.current_configuration = current_configuration
         self.accept_states = accept_states
         self.rulebook = rulebook
+        self.is_debug = is_debug
+        self.step_counter = 0
 
     def accepting(self):
         return self.current_configuration.state in self.accept_states
 
     def step(self):
         self.current_configuration = self.rulebook.next_configuration(self.current_configuration)
+        self.step_counter += 1
+
+        self.debug_state()
 
     def run(self):
+        self.debug_state()
+
         while not self.accepting() and not self.is_stuck():
             self.step()
 
     def is_stuck(self):
         return not self.accepting() and not self.rulebook.applies_to(self.current_configuration)
+
+    def debug_state(self):
+        if self.is_debug:
+            print('Step: {}\t{}'.format(self.step_counter, self.current_configuration))
 
 
 class DTMDesign:
@@ -138,11 +149,12 @@ class DTMDesign:
         self.accept_states = accept_states
         self.rulebook = rulebook
 
-    def new_dtm(self, tape):
-        return DTM(TMConfiguration(self.start_state, tape), self.accept_states, self.rulebook)
+    def new_dtm(self, tape, is_debug):
+        return DTM(
+            TMConfiguration(self.start_state, tape), self.accept_states, self.rulebook, is_debug)
 
-    def accepts(self, tape):
-        dtm = self.new_dtm(tape)
+    def accepts(self, tape, is_debug=False):
+        dtm = self.new_dtm(tape, is_debug)
         dtm.run()
         return dtm.accepting()
 
