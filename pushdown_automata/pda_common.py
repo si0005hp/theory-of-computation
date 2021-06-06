@@ -80,16 +80,66 @@ class PDARule:
 
 class PDAGraph(Graph):
 
+    class LabelMaker:
+
+        def char(self, rule):
+            return "ε" if rule._character == None else rule._character
+
+        def make_label(self, rule):
+            pass
+
+    class RigidLabelMaker(LabelMaker):
+
+        def make_label(self, rule):
+            pop_char = rule._pop_character
+            push_chars = ''.join(rule._push_characters)
+            return '{};{}/{}'.format(self.char(rule), pop_char, push_chars)
+
+    class SimpleLabelMaker(LabelMaker):
+
+        def make_label(self, rule):
+            pop_char = rule._pop_character
+            push_char = None
+            if len(rule._push_characters) == 0:
+                push_char = 'ε'
+            elif len(rule._push_characters) == 1:
+                push_char = rule._push_characters[0]
+            elif len(rule._push_characters) == 2:
+                pop_char = 'ε'
+                push_char = rule._push_characters[0]
+            else:
+                raise RuntimeError('Illegal push_characters size. It must be between 0 and 2.')
+
+            return '{},{}→{}'.format(self.char(rule), pop_char, push_char)
+
+    def __init__(self, bottom_character, use_label_simple=False):
+        self.bottom_character = bottom_character
+        self.label_maker = self.SimpleLabelMaker() if use_label_simple else self.RigidLabelMaker()
+
     # Override
     def make_label(self, rule):
-        char = "ε" if rule._character == None else rule._character
-        pop_char = rule._pop_character
-        push_chars = ''.join(rule._push_characters)
-        return '{};{}/{}'.format(char, pop_char, push_chars)
+        return self.label_maker.make_label(rule)
 
     # Override
     def format_labels(self, labels):
-        return ',\n'.join(labels)
+        # NOTE: Currently only PDA eliminates dupulication.
+        return '\n'.join(set(labels))
+
+    # Override
+    def add_start_edge(self, graph, start_state):
+        # For PDA, insert additional state for pushing stack bottom character
+        additional_start_state = 'S'
+        graph.node(additional_start_state, **{'root': 'true', 'shape': 'circle'})
+        graph.edge(
+            additional_start_state, self.state_to_str(start_state),
+            self.make_label(
+                PDARule(additional_start_state, None, self.state_to_str(start_state), self.bottom_character,
+                        [self.bottom_character, self.bottom_character])))
+
+        # Then add arrow to additional_start_state
+        dummy_node = fa_util.random_str(8)
+        graph.node(dummy_node, style="invis", shape="point")
+        graph.edge(dummy_node, additional_start_state, style="bold")
 
 
 class PDADesign:
@@ -100,11 +150,12 @@ class PDADesign:
         self._accept_states = accept_states
         self._rulebook = rulebook
 
-    def draw(self, directory=None, filename=None):
+    def draw(self, directory=None, filename=None, use_label_simple=False):
         if directory == None:
             directory = "/tmp"
         if filename == None:
             filename = fa_util.random_str(8)
 
-        PDAGraph().draw(directory, filename, self._rulebook._rules, self._start_state,
-                        self._accept_states)
+        PDAGraph(self._bottom_character,
+                 use_label_simple).draw(directory, filename, self._rulebook._rules,
+                                        self._start_state, self._accept_states)

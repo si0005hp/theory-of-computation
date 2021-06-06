@@ -43,6 +43,7 @@ class Graph:
     def get_next_state(self, rule):
         return rule._next_state
 
+    # Supposed to be extended
     def add_start_edge(self, graph, start_state):
         dummy_node = fa_util.random_str(8)
         graph.node(dummy_node, style="invis", shape="point")

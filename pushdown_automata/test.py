@@ -1,11 +1,22 @@
 import unittest
+import os
 
 from dpda import DPDARulebook, DPDA, DPDADesign
 from npda import NPDARulebook, NPDA, NPDADesign
 from pda_common import PDARule, PDAConfiguration, Stack
 
 
-class TestStack(unittest.TestCase):
+class TestBase(unittest.TestCase):
+
+    def draw(self, design, test_case_name):
+        filename = "{}_{}".format(self.__class__.__name__, test_case_name)
+        use_label_simple = os.environ.get("SIMPLE_GRAPH") == "1"
+        if use_label_simple:
+            filename = filename + "_simple"
+        design.draw("/tmp", filename, use_label_simple)
+
+
+class TestStack(TestBase):
 
     def test_stack(self):
         self.assertEqual('a', Stack().push('a').__str__())
@@ -15,7 +26,7 @@ class TestStack(unittest.TestCase):
         self.assertEqual('aaa', Stack(['a', 'a', 'a']).__str__())
 
 
-class TestDPDA(unittest.TestCase):
+class TestDPDA(TestBase):
 
     def test_dpda(self):
         design = DPDADesign(
@@ -26,6 +37,8 @@ class TestDPDA(unittest.TestCase):
                 PDARule(2, ')', 2, 'b', []),
                 PDARule(2, None, 1, '$', ['$'])
             ]))
+
+        super().draw(design, 'test_dpda')
 
         for string in ['(', ')', '()(', '(()', '(()(()(()()(()()))()']:
             self.assertFalse(design.accepts(string))
@@ -51,6 +64,8 @@ class TestDPDA(unittest.TestCase):
                 PDARule(2, None, 3, '$', ['$'])
             ]))
 
+        super().draw(design, 'test_dpda2')
+
         for string in ['abmb', 'baambaa']:
             self.assertFalse(design.accepts(string))
 
@@ -58,7 +73,7 @@ class TestDPDA(unittest.TestCase):
             self.assertTrue(design.accepts(string))
 
 
-class TestNPDA(unittest.TestCase):
+class TestNPDA(TestBase):
 
     def test_npda(self):
         design = NPDADesign(
@@ -75,8 +90,10 @@ class TestNPDA(unittest.TestCase):
                 PDARule(1, None, 2, 'b', ['b']),
                 PDARule(2, 'a', 2, 'a', []),
                 PDARule(2, 'b', 2, 'b', []),
-                PDARule(2, None, 3, '$', ['$'])
+                PDARule(2, None, 3, '$', [])
             ]))
+
+        super().draw(design, 'test_npda')
 
         for string in ['a', 'ab', 'abb', 'baabaa']:
             self.assertFalse(design.accepts(string))
