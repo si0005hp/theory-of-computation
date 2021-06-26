@@ -21,7 +21,7 @@ class Stack:
         return Stack(self._contents[:-1])
 
     def top(self):
-        return self._contents[-1]
+        return self._contents[-1] if len(self._contents) > 0 else None
 
     def __str__(self):
         return ''.join(self._contents)
