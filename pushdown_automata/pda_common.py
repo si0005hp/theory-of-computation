@@ -133,8 +133,8 @@ class PDAGraph(Graph):
         graph.edge(
             additional_start_state, self.state_to_str(start_state),
             self.make_label(
-                PDARule(additional_start_state, None, self.state_to_str(start_state), self.bottom_character,
-                        [self.bottom_character, self.bottom_character])))
+                PDARule(additional_start_state, None, self.state_to_str(start_state),
+                        self.bottom_character, [self.bottom_character, self.bottom_character])))
 
         # Then add arrow to additional_start_state
         dummy_node = fa_util.random_str(8)
